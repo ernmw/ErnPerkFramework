@@ -27,8 +27,7 @@ local sectionName = "perks"
 local function initStatsWindowIntegration()
     if interfaces.StatsWindow then
         log(nil, "StatsWindow found.")
-        interfaces.StatsWindow.trackStat('SF_CustomSkills', function() return interfaces.SkillFramework.getRecords() end)
-
+        interfaces.StatsWindow.trackStat(MOD_NAME, interfaces.ErnPerkFramework.getPlayerPerks)
         local lineBuilder = function(perkId)
             local perkRecord = interfaces.ErnPerkFramework.getPerks()[perkId]
             return {
@@ -63,12 +62,17 @@ local function initStatsWindowIntegration()
                 target = interfaces.StatsWindow.DefaultSections.BIRTHSIGN,
                 priority = 1,
             },
-            header = localization('perks'),
+            header = localization(sectionName),
             indent = true,
             sort = interfaces.StatsWindow.Sort.LABEL_ASC,
+            trackedStats = { [MOD_NAME] = true },
             builder = function()
-                for _, id in ipairs(interfaces.ErnPerkFramework.getPlayerPerks()) do
+                -- debug
+                print("building perks stats section")
+                for _, id in ipairs(interfaces.StatsWindow.getStat(MOD_NAME)) do
                     interfaces.StatsWindow.addLineToSection(id, sectionName, lineBuilder(id))
+                    -- debug
+                    print("building line: " .. id)
                 end
             end,
         })
