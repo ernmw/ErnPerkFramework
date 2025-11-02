@@ -19,35 +19,28 @@ local MOD_NAME = require("scripts.ErnPerkFramework.settings").MOD_NAME
 local interfaces = require('openmw.interfaces')
 local log = require("scripts.ErnPerkFramework.log")
 local core = require("openmw.core")
+local ui = require("openmw.ui")
 local localization = core.l10n(MOD_NAME)
 local pself = require("openmw.self")
+local util = require("openmw.util")
 
 local sectionName = "perks"
 
 local function initStatsWindowIntegration()
     if interfaces.StatsWindow then
         log(nil, "StatsWindow found.")
-        interfaces.StatsWindow.trackStat(MOD_NAME, interfaces.ErnPerkFramework.getPlayerPerks)
+        interfaces.StatsWindow.trackStat(MOD_NAME, function()
+            -- this appears to work.
+            return interfaces.ErnPerkFramework.getPlayerPerks()
+        end)
         local lineBuilder = function(perkId)
+            print("building line: " .. perkId)
             local perkRecord = interfaces.ErnPerkFramework.getPerks()[perkId]
             return {
                 label = perkRecord:name(),
-                --[[value = function()
-                    local skillStat = interfaces.SkillFramework.getLevel(perkId)
-                    return { string = tostring(skillStat.value) }
-                end,]]
-                --[[tooltip = function()
-                    local skillStat = interfaces.SkillFramework.getLevel(perkId)
-                    return interfaces.StatsWindow.TooltipBuilders.SKILL({
-                        iconBgr = skillRecord.props.bgr,
-                        iconFgr = skillRecord.props.icon,
-                        title = skillL10n(perkId),
-                        description = skillL10n(perkId .. '_Desc'),
-                        currentValue = skillStat.value,
-                        progress = skillStat.xp / interfaces.SkillFramework.getLevelUpRequirement(perkId),
-                        maxValue = skillRecord.props.maxValue,
-                    })
-                end,]]
+                tooltip = function()
+                    return interfaces.StatsWindow.TooltipBuilders.TEXT({ text = perkRecord:description() })
+                end,
                 onClick = function()
                     pself:sendEvent(MOD_NAME .. "showPerkUI",
                         { visiblePerks = { perkId } })
@@ -71,8 +64,6 @@ local function initStatsWindowIntegration()
                 print("building perks stats section")
                 for _, id in ipairs(interfaces.StatsWindow.getStat(MOD_NAME)) do
                     interfaces.StatsWindow.addLineToSection(id, sectionName, lineBuilder(id))
-                    -- debug
-                    print("building line: " .. id)
                 end
             end,
         })
