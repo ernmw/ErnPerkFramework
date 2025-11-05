@@ -28,6 +28,7 @@ local sectionName = "perks"
 
 local function initStatsWindowIntegration()
     if interfaces.StatsWindow then
+        local sc = interfaces.StatsWindow.Constants
         log(nil, "StatsWindow found.")
         interfaces.StatsWindow.trackStat(MOD_NAME, function()
             -- this appears to work.
@@ -48,25 +49,26 @@ local function initStatsWindowIntegration()
             }
         end
 
-        interfaces.StatsWindow.addSectionToBox(sectionName, interfaces.StatsWindow.DefaultBoxes.RIGHT_SCROLL_BOX, {
-            l10n = MOD_NAME,
-            placement = {
-                type = interfaces.StatsWindow.Placement.AFTER,
-                target = interfaces.StatsWindow.DefaultSections.BIRTHSIGN,
-                priority = 1,
-            },
-            header = localization(sectionName),
-            indent = true,
-            sort = interfaces.StatsWindow.Sort.LABEL_ASC,
-            trackedStats = { [MOD_NAME] = true },
-            builder = function()
-                -- debug
-                print("building perks stats section")
-                for _, id in ipairs(interfaces.StatsWindow.getStat(MOD_NAME)) do
-                    interfaces.StatsWindow.addLineToSection(id, sectionName, lineBuilder(id))
-                end
-            end,
-        })
+        interfaces.StatsWindow.addSectionToBox(sectionName,
+            sc.DefaultBoxes.RIGHT_SCROLL_BOX, {
+                l10n = MOD_NAME,
+                placement = {
+                    type = sc.Placement.AFTER,
+                    target = sc.DefaultSections.BIRTHSIGN,
+                    priority = 1,
+                },
+                header = localization(sectionName),
+                indent = true,
+                sort = sc.Sort.LABEL_ASC,
+                trackedStats = { [MOD_NAME] = true },
+                builder = function()
+                    -- debug
+                    print("building perks stats section")
+                    for _, id in ipairs(interfaces.StatsWindow.getStat(MOD_NAME)) do
+                        interfaces.StatsWindow.addLineToSection(id, sectionName, lineBuilder(id))
+                    end
+                end,
+            })
     else
         log(nil, "StatsWindow not found.")
     end
