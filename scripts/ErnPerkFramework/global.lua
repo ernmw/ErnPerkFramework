@@ -22,31 +22,55 @@ local storage = require('openmw.storage')
 local mwVars = storage.globalSection(MOD_NAME .. "_mwVars")
 mwVars:setLifeTime(storage.LIFE_TIME.Temporary)
 
-local function updateMwVars()
-    for _, player in ipairs(world.players) do
-        local globalVars = world.mwscript.getGlobalVariables(player)
-        local asTable = {}
-        local count = 0
-        for k, v in pairs(globalVars) do
-            asTable[k] = v
-            count = count + 1
+local function syncGlobalVarsForPlayer(player, noYield)
+    print("Saving variables for player " .. tostring(player.id) .. "...")
+    local asTable = {}
+    local count = 0
+    for k, v in pairs(world.mwscript.getGlobalVariables(player)) do
+        asTable[k] = v
+        count = count + 1
+        if not noYield and count % 20 == 0 then
+            print("Saved " .. tostring(count) .. " variables for player " .. tostring(player.id))
+            coroutine.yield()
         end
-        mwVars:set(player.id, asTable)
-        print("Saved " .. tostring(count) .. " variables for player " .. tostring(player.id))
     end
+    mwVars:set(player.id, asTable)
+    print("Done saving " .. tostring(count) .. " variables for player " .. tostring(player.id))
 end
 
 local function loadState(saved)
-    updateMwVars()
+    for _, player in ipairs(world.players) do
+        syncGlobalVarsForPlayer(player, true)
+    end
 end
 
-local delta = 31
+local remainingDT = 1
+local pendingCoroutines = {}
+local function updateMwVars()
+    for _, player in ipairs(world.players) do
+        print("running for " .. tostring(player.id))
+        local ok
+        if pendingCoroutines[player.id] == nil then
+            print("new mwvar sync")
+            pendingCoroutines[player.id] = coroutine.create(syncGlobalVarsForPlayer)
+            ok = coroutine.resume(pendingCoroutines[player.id], player, false)
+        else
+        print("resuming mwvar sync")
+        ok = coroutine.resume(pendingCoroutines[player.id])
+        end
+        if not ok then
+            print("mwvar sync done??")
+            pendingCoroutines[player.id] = nil
+        end
+    end
+end
+
 local function onUpdate(dt)
-    delta = delta - dt
-    if delta > 0 then
+    remainingDT = remainingDT - dt
+    if remainingDT > 0 then
         return
     end
-    delta = 31
+    remainingDT = 3.01
     updateMwVars()
 end
 
@@ -55,5 +79,6 @@ return {
         onPlayerAdded = updateMwVars,
         onUpdate = onUpdate,
         onLoad = loadState,
+        onInit = function() onLoad(nil) end,
     }
 }

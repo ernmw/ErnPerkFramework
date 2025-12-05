@@ -93,7 +93,7 @@ local function syncPerks()
     log(nil, "syncPerks() ended.")
 end
 
-local remainingDT = 0
+
 local syncCoroutine = nil
 local function processSync()
     if syncCoroutine == nil then
@@ -102,22 +102,23 @@ local function processSync()
     local ok = coroutine.resume(syncCoroutine)
     if not ok then
         syncCoroutine = nil
-        remainingDT = 20
     end
 end
 
+local remainingDT = 0
 local function onUpdate(dt)
+    -- don't do anything if we are in the UI.
+    if UI.getMode() ~= nil and UI.getMode() ~= "" then
+        return
+    end
+
     -- don't call this all the time
     remainingDT = remainingDT - dt
     if remainingDT > 0 then
         return
     end
 
-    -- don't do anything if we are in the UI.
-    if UI.getMode() ~= nil and UI.getMode() ~= "" then
-        return
-    end
-
+    remainingDT = 2.06
     -- sync often in case we drop requirements somehow
     processSync()
 end
