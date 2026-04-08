@@ -392,7 +392,12 @@ local function redraw()
     end
 end
 
+local debounce = 0
+
 local function showPerkUI(data)
+    -- prevent input for 5 frames. this is here to stop accidental "Enter" keys
+    -- from triggereing when entering the ui from the console.
+    debounce = 5
     weightsCache = {}
     satisfiedCache = {}
 
@@ -462,7 +467,6 @@ local function onMouseWheel(direction)
     redraw()
 end
 
-local debounce = 0
 local keyEnterStatus = false
 local keyEscapeStatus = false
 local function onFrame(dt)

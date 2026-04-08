@@ -16,7 +16,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ]]
 local MOD_NAME = require("scripts.ErnPerkFramework.settings").MOD_NAME
-local pself = require("openmw.self")
 local interfaces = require("openmw.interfaces")
 local ui = require('openmw.ui')
 local vfs = require('openmw.vfs')
