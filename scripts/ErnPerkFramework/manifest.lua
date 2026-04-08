@@ -192,11 +192,27 @@ local function getPlayerPerks()
     return playerPerks
 end
 
---- setPlayerPerks replaces the ordered list of perk IDs that the player chose.
---- You probably don't want to use this for general perk manipulation.
+--- _setPlayerPerks replaces the ordered list of perk IDs that the player chose.
+--- You don't want to use this for general perk manipulation, since it won't call
+--- onAdd or onRemove.
 --- @param perkIDList table The new ordered list of perk IDs to set for the player.
-local function setPlayerPerks(perkIDList)
+local function _setPlayerPerks(perkIDList)
     playerPerks = perkIDList
+end
+
+--- respecPerks removes all perks from the player.
+local function respecPerks()
+    print(nil, "respec() started.")
+    local snapshot = getPlayerPerks()
+    for _, perkID in ipairs(snapshot) do
+        local foundPerk = getPerks()[perkID]
+        if foundPerk then
+            print(nil, "Removing perk " .. perkID .. ".")
+            foundPerk:onRemove()
+        end
+    end
+    _setPlayerPerks({})
+    print(nil, "respec() ended.")
 end
 
 --- totalAllowedPoints returns how many total perk points a player has.
@@ -250,7 +266,8 @@ return {
         getPerkIDs = getPerkIDs,
         requirements = requirements,
         getPlayerPerks = getPlayerPerks,
-        setPlayerPerks = setPlayerPerks,
+        respecPerks = respecPerks,
+        _setPlayerPerks = _setPlayerPerks,
         currentSpentPoints = currentSpentPoints,
         totalAllowedPoints = totalAllowedPoints,
     },

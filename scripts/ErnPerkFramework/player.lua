@@ -16,9 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ]]
 local interfaces = require("openmw.interfaces")
-local storage = require('openmw.storage')
 local pself = require("openmw.self")
-local types = require("openmw.types")
 local log = require("scripts.ErnPerkFramework.log")
 local settings = require("scripts.ErnPerkFramework.settings")
 local UI = require('openmw.interfaces').UI
@@ -82,9 +80,10 @@ local function syncPerks()
             -- there were no changes, so stop.
             break
         end
+        currentCount = #snapshot
     end
     -- now that we're done removing them, apply them.
-    interfaces.ErnPerkFramework.setPlayerPerks(snapshot)
+    interfaces.ErnPerkFramework._setPlayerPerks(snapshot)
     for _, perkID in ipairs(interfaces.ErnPerkFramework.getPlayerPerks()) do
         log(nil, "Adding perk " .. perkID .. "!")
         local foundPerk = interfaces.ErnPerkFramework.getPerks()[perkID]
@@ -92,7 +91,6 @@ local function syncPerks()
     end
     log(nil, "syncPerks() ended.")
 end
-
 
 local syncCoroutine = nil
 local function processSync()
@@ -138,7 +136,7 @@ local function addPerk(data)
         if interfaces.ErnPerkFramework.currentSpentPoints() + foundPerk:cost() <= totalAllowed then
             local activePerksByID = interfaces.ErnPerkFramework.getPlayerPerks()
             table.insert(activePerksByID, data.perkID)
-            interfaces.ErnPerkFramework.setPlayerPerks(activePerksByID)
+            interfaces.ErnPerkFramework._setPlayerPerks(activePerksByID)
             foundPerk:onAdd()
         else
             log(nil,
@@ -201,7 +199,7 @@ local function onConsoleCommand(mode, command, selectedObject)
             { visiblePerks = visible })
     elseif respec ~= nil then
         print("Perk Respec")
-        interfaces.ErnPerkFramework.setPlayerPerks({})
+        interfaces.ErnPerkFramework.respecPerks()
         remainingDT = 0
     end
 end

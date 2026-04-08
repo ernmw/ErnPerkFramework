@@ -19,10 +19,8 @@ local MOD_NAME = require("scripts.ErnPerkFramework.settings").MOD_NAME
 local interfaces = require('openmw.interfaces')
 local log = require("scripts.ErnPerkFramework.log")
 local core = require("openmw.core")
-local ui = require("openmw.ui")
 local localization = core.l10n(MOD_NAME)
 local pself = require("openmw.self")
-local util = require("openmw.util")
 
 local sectionName = "perks"
 

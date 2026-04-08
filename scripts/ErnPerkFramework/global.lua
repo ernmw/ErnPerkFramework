@@ -51,7 +51,7 @@ local function updateMwVars()
             pendingCoroutines[player.id] = coroutine.create(syncGlobalVarsForPlayer)
             ok = coroutine.resume(pendingCoroutines[player.id], player, false)
         else
-        ok = coroutine.resume(pendingCoroutines[player.id])
+            ok = coroutine.resume(pendingCoroutines[player.id])
         end
         if not ok then
             pendingCoroutines[player.id] = nil
@@ -73,6 +73,6 @@ return {
         onPlayerAdded = updateMwVars,
         onUpdate = onUpdate,
         onLoad = loadState,
-        onInit = function() onLoad(nil) end,
+        onInit = loadState,
     }
 }
