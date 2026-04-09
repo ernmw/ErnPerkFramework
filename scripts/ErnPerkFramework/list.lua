@@ -262,9 +262,9 @@ function ListFunctions.setSelectedIndex(self, idx)
     self.selectedIndex = self:clamp(idx)
 end
 
--- scroll 'step' indices. negative number is up. you want to call update afterward.
+-- scroll 'step' indices.
 function ListFunctions.scroll(self, step)
-    self.selectedIndex = self:clamp(self.selectedIndex + step)
+    self.selectedIndex = self:clamp(self.selectedIndex - step)
 end
 
 return { NewList = NewList }

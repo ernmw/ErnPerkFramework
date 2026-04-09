@@ -31,6 +31,8 @@ local list = require('scripts.ErnPerkFramework.list')
 local core = require("openmw.core")
 local localization = core.l10n(MOD_NAME)
 
+local DEBOUNCE_FRAMES = 5
+
 -- A content list can contain both Elements and Layouts.
 -- Elements are what you get when you call ui.create().
 -- Elements are passed by reference, so you can update them without needing to
@@ -397,7 +399,7 @@ local debounce = 0
 local function showPerkUI(data)
     -- prevent input for 5 frames. this is here to stop accidental "Enter" keys
     -- from triggereing when entering the ui from the console.
-    debounce = 5
+    debounce = DEBOUNCE_FRAMES
     weightsCache = {}
     satisfiedCache = {}
 
@@ -460,15 +462,17 @@ local function onMouseWheel(direction)
         return
     end
     if direction < 0 then
-        perkList:scroll(-1)
-    else
         perkList:scroll(1)
+    else
+        perkList:scroll(-1)
     end
     redraw()
 end
 
 local keyEnterStatus = false
 local keyEscapeStatus = false
+local keyDownStatus = false
+local keyUpStatus = false
 local function onFrame(dt)
     if menu == nil then
         return
@@ -481,14 +485,20 @@ local function onFrame(dt)
     end
 
     if input.isKeyPressed(input.KEY.DownArrow) or input.isControllerButtonPressed(input.CONTROLLER_BUTTON.DPadDown) then
-        perkList:scroll(1)
-        debounce = 5
+        perkList:scroll(-1)
+        debounce = keyDownStatus and DEBOUNCE_FRAMES or 5*DEBOUNCE_FRAMES
+        keyDownStatus = true
         redraw()
+    else
+        keyDownStatus = false
     end
     if input.isKeyPressed(input.KEY.UpArrow) or input.isControllerButtonPressed(input.CONTROLLER_BUTTON.DPadUp) then
-        perkList:scroll(-1)
-        debounce = 5
+        perkList:scroll(1)
+        debounce = keyUpStatus and DEBOUNCE_FRAMES or 5*DEBOUNCE_FRAMES
+        keyUpStatus = true
         redraw()
+    else
+        keyUpStatus = false
     end
 
     -- x on playstation is south. trigger on falling edge.

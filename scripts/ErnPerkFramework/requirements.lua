@@ -102,6 +102,11 @@ local function atLeastRank(npc, factionID, rank)
         return false
     end
 
+    if types.NPC.isExpelled(npc, factionID) then
+        -- kicked out
+        return false
+    end
+
     local selfRank = types.NPC.getFactionRank(npc, factionID)
     if selfRank == nil then
         return false
