@@ -65,15 +65,26 @@ local function validateRequirement(requirement)
     return true
 end
 
+---@class PerkData
+---@field id string                                  -- Unique perk ID
+---@field requirements table                         -- Array of requirement objects (validated elsewhere)
+---@field onAdd fun(perk: table)                     -- Called when the perk is added
+---@field onRemove fun(perk: table)                  -- Called when the perk is removed
+---@field localizedName? string|fun():string         -- Display name or function returning it
+---@field localizedDescription? string|fun():string  -- Description or function returning it
+---@field art? string|fun():string                   -- Texture path or function returning it
+---@field hidden? boolean|fun():boolean              -- Whether perk is hidden
+---@field cost? number|fun():number                  -- Cost of the perk
+
 --- Registers a new perk into the framework.
 --- Perks must have `id`, `requirements` (table), `onAdd` (function), and `onRemove` (function).
 --- Optional fields: `localizedName`, `localizedDescription`, `art`, `hidden`, `cost`.
 --- If a perk with the same ID already exists, it is replaced.
---- @param data table The perk record data to register.
+--- @param data PerkData The perk record data to register.
 --- @return boolean True upon successful registration.
 local function registerPerk(data)
     if (not data) or (type(data) ~= "table") then
-        error("validateRequirement() argument is not a table.", 2)
+        error("registerPerk() argument is not a table.", 2)
         return false
     end
     if (not data.id) or (type(data.id) ~= "string") then
