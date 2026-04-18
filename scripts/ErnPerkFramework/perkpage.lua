@@ -22,7 +22,7 @@ local types = require("openmw.types")
 local input = require("openmw.input")
 local log = require("scripts.ErnPerkFramework.log")
 local util = require('openmw.util')
-local MOD_NAME = require("scripts.ErnPerkFramework.settings").MOD_NAME
+local MOD_NAME = require("scripts.ErnPerkFramework.ns")
 local settings = require("scripts.ErnPerkFramework.settings")
 local ui = require('openmw.ui')
 local aux_util = require('openmw_aux.util')
@@ -181,7 +181,7 @@ local function pickPerk()
                     end
                 end
                 -- re-open or refresh the current window
-                pself:sendEvent(settings.MOD_NAME .. "showPerkUI",
+                pself:sendEvent(MOD_NAME .. "showPerkUI",
                     { remainingPoints = remainingPoints, visiblePerks = visiblePerksClone })
             end
         end

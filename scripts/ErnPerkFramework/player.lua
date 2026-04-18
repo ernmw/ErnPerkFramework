@@ -18,10 +18,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 local interfaces = require("openmw.interfaces")
 local pself = require("openmw.self")
 local log = require("scripts.ErnPerkFramework.log")
-local settings = require("scripts.ErnPerkFramework.settings")
+local MOD_NAME = require("scripts.ErnPerkFramework.ns")
+local settings = require("scripts.ErnPerkFramework.settings").main
 local UI = require('openmw.interfaces').UI
-
-settings.init()
 
 local function hasPerk(id)
     for _, foundID in ipairs(interfaces.ErnPerkFramework.getPlayerPerks()) do
@@ -195,7 +194,7 @@ local function onConsoleCommand(mode, command, selectedObject)
         if #visible == 0 then
             visible = nil
         end
-        pself:sendEvent(settings.MOD_NAME .. "showPerkUI",
+        pself:sendEvent(MOD_NAME .. "showPerkUI",
             { visiblePerks = visible })
     elseif respec ~= nil then
         print("Perk Respec")
@@ -208,26 +207,25 @@ local function UiModeChanged(data)
     if (data.newMode ~= nil) then
         return
     end
-    local hasNCGDMW = interfaces.NCGDMW ~= nil
     -- spawn perk UI after the levelup UI.
     if data.oldMode == 'LevelUp' then
         if shouldShowUI() then
-            pself:sendEvent(settings.MOD_NAME .. "showPerkUI", {})
+            pself:sendEvent(MOD_NAME .. "showPerkUI", {})
         end
-    elseif hasNCGDMW and data.oldMode == 'Rest' then
+    elseif settings.showOnRest and data.oldMode == 'Rest' then
         if shouldShowUI() then
-            pself:sendEvent(settings.MOD_NAME .. "showPerkUI", {})
+            pself:sendEvent(MOD_NAME .. "showPerkUI", {})
         end
     else
-        pself:sendEvent(settings.MOD_NAME .. "closePerkUI", {})
+        pself:sendEvent(MOD_NAME .. "closePerkUI", {})
     end
 end
 
 return {
     eventHandlers = {
         UiModeChanged = UiModeChanged,
-        [settings.MOD_NAME .. "addPerk"] = addPerk,
-        [settings.MOD_NAME .. "removePerk"] = removePerk,
+        [MOD_NAME .. "addPerk"] = addPerk,
+        [MOD_NAME .. "removePerk"] = removePerk,
     },
     engineHandlers = {
         onUpdate = onUpdate,

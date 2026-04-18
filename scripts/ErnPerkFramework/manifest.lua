@@ -15,12 +15,12 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ]]
-local MOD_NAME = require("scripts.ErnPerkFramework.settings").MOD_NAME
+local MOD_NAME = require("scripts.ErnPerkFramework.ns")
 local perkUtil = require("scripts.ErnPerkFramework.perk")
 local pself = require("openmw.self")
 local reqs = require("scripts.ErnPerkFramework.requirements")
 local types = require("openmw.types")
-local settings = require("scripts.ErnPerkFramework.settings")
+local settings = require("scripts.ErnPerkFramework.settings").main
 
 if require("openmw.core").API_REVISION < 62 then
     error("OpenMW 0.49 or newer is required!")
